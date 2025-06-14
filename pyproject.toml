@@ -12,7 +12,7 @@ authors = [
 readme = "README.md"
 license = { file="LICENSE" }
 requires-python = ">=3.11"
-dependencies = ["requests"]
+dependencies = ["requests", "beautifulsoup4"]
 
 [project.optional-dependencies]
 dev = ["pytest", "mkdocs-material", "black", "flake8"]
