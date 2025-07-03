@@ -53,7 +53,7 @@ class TestApi:
             if 'Set-Cookie' in response.headers:
                 secure_login = True
 
-        res2 = session.get('http://192.168.0.100/index.htm/', timeout=2.0, verify=False, allow_redirects=True)
+        res2 = session.get('http://192.168.0.100/index.htm', timeout=2.0, verify=False, allow_redirects=True)
         print(res2.status_code)
         print(res2.content)
 
