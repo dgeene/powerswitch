@@ -1,4 +1,3 @@
-from src.powerswitch.switch import Switch
 import requests
 from requests.auth import HTTPDigestAuth
 from bs4 import BeautifulSoup
