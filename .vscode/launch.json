@@ -13,7 +13,7 @@
             "justMyCode": false,
             "args": [
                 "-vs",
-                "tests/test_api.py::TestApi::test_http_auth_nonwifi_switch"
+                "tests/test_api.py::TestApi::test_http_auth"
             ]
         }
     ]
