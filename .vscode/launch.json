@@ -15,6 +15,17 @@
                 "-vs",
                 "tests/test_api.py::TestApi::test_http_auth"
             ]
+        },
+        {
+            "name": "test_html",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "justMyCode": false,
+            "args": [
+                "-vs",
+                "tests/test_html_parse.py::TestHtmlParse::test_non_wifi_html_parse"
+            ]
         }
     ]
 }
