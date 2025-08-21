@@ -29,6 +29,11 @@ class PowerSwitchClient(ABC):
         """Turns off a switch."""
         raise NotImplementedError
 
+    @abstractmethod
+    def outlets(self):
+        """Get all outlets."""
+        raise NotImplementedError
+
 
 class RestClient(PowerSwitchClient):
     """
@@ -56,6 +61,12 @@ class RestClient(PowerSwitchClient):
         res = self.__session.put(f'http://{self.address}/restapi/relay/outlets/{switch_id}/state/', json=False)
         res.raise_for_status()
 
+    def outlets(self):
+        """Get all outlets"""
+        res = self.__session.get(f'http://{self.address}/restapi/relay/outlets/')
+        res.raise_for_status()
+        return res.json()
+
 
 class HTTPClient(PowerSwitchClient):
     """
@@ -79,4 +90,8 @@ class HTTPClient(PowerSwitchClient):
         # url = f"{self.address}/relay/outlet=?{switch_id}=OFF"
         # response = requests.get(url, auth=(self.username, self.password))
         # response.raise_for_status()
+        pass
+
+    def outlets(self):
+        """Get all outlets"""
         pass
