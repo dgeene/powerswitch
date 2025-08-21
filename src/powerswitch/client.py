@@ -1,3 +1,5 @@
+import requests
+from requests.auth import HTTPDigestAuth
 from abc import ABC, abstractmethod
 
 
@@ -33,25 +35,26 @@ class RestClient(PowerSwitchClient):
     Controls a power switch using a REST API.
     - Turn on: POST /relay/switch/{switch_id}
     """
+
+    def __init__(self, address, username, password):
+        super().__init__(address, username, password)
+        self.__session = requests.Session()
+        self.__session.auth = HTTPDigestAuth(username, password)
+        self.__session.headers = {
+            'accept': 'application/json',
+            'content-type': 'application/json',
+            'prefer': 'return=minimal',
+            'x-csrf': 'x'}
+
     def turn_on(self, switch_id: int):
         """Turns on a switch."""
-        # Example implementation:
-        # import requests
-        # url = f"{self.address}/relay/switch/{switch_id}"
-        # response = requests.post(url, auth=(self.username, self.password))
-        # response.raise_for_status()
-        pass
+        res = self.__session.put(f'http://{self.address}/restapi/relay/outlets/{switch_id}/state/', json=True)
+        res.raise_for_status()
 
     def turn_off(self, switch_id: int):
         """Turns off a switch."""
-        # The user did not specify how to turn off a switch with the REST API.
-        # This could be a DELETE request, or a POST with a different body/endpoint.
-        # Example with DELETE:
-        # import requests
-        # url = f"{self.address}/relay/switch/{switch_id}"
-        # response = requests.delete(url, auth=(self.username, self.password))
-        # response.raise_for_status()
-        pass
+        res = self.__session.put(f'http://{self.address}/restapi/relay/outlets/{switch_id}/state/', json=False)
+        res.raise_for_status()
 
 
 class HTTPClient(PowerSwitchClient):

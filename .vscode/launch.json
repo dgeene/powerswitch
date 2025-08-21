@@ -26,6 +26,17 @@
                 "-vs",
                 "tests/test_html_parse.py::TestHtmlParse::test_non_wifi_html_parse"
             ]
+        },
+        {
+            "name": "test_restclient",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "justMyCode": false,
+            "args": [
+                "-vs",
+                "tests/test_rest_client.py::TestRestClient::test_client_turn_on"
+            ]
         }
     ]
 }
