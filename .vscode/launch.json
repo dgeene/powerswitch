@@ -37,6 +37,17 @@
                 "-vs",
                 "tests/test_rest_client.py::TestRestClient::test_client_turn_on"
             ]
+        },
+        {
+            "name": "test_httpclient",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "justMyCode": false,
+            "args": [
+                "-vs",
+                "tests/test_rest_client.py::TestHttpClient::test_client_turn_on"
+            ]
         }
     ]
 }
