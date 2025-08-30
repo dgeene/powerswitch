@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from requests.auth import HTTPDigestAuth
 from abc import ABC, abstractmethod
+from .html_parser import parse_outlet_list
 
 
 class PowerSwitchClient(ABC):
@@ -86,10 +87,10 @@ class HTTPClient(PowerSwitchClient):
 
     def __authenticate(self):
         res = self.__session.get(f'http://{self.address}/', allow_redirects=False)
-        print(res.is_redirect)
-        print(res.headers)
-        print(res.content)
-        print(self.__session.cookies)
+        #print(res.is_redirect)
+        #print(res.headers)
+        #print(res.content)
+        #print(self.__session.cookies)
         soup = BeautifulSoup(res.text, 'html.parser')
         fields = {}
         for field in soup.find_all('input'):
@@ -97,7 +98,7 @@ class HTTPClient(PowerSwitchClient):
             value = field.get('value', '')
             if name:
                 fields[name] = value
-        print(fields)
+        #print(fields)
         fields['Username'] = self.username
         fields['Password'] = self.password
         form_response = fields['Challenge'] + fields['Username'] + fields['Password'] + fields['Challenge']
@@ -111,7 +112,7 @@ class HTTPClient(PowerSwitchClient):
             self.secure_login = False
             self.__session = None
             return
-        print(self.__session.cookies)
+        #print(self.__session.cookies)
         if response.status_code == 200:
             if 'Set-Cookie' in response.headers:
                 self.secure_login = True
@@ -137,5 +138,5 @@ class HTTPClient(PowerSwitchClient):
     def outlets(self):
         """Get all outlets"""
         res = self.__session.get(f'http://{self.address}/index.htm', timeout=2.0, verify=False, allow_redirects=True)
-        print(res.status_code)
-        return res.content
+        res.raise_for_status()
+        return parse_outlet_list(res.text)
