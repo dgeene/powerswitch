@@ -119,21 +119,13 @@ class HTTPClient(PowerSwitchClient):
 
     def turn_on(self, switch_id: int):
         """Turns on a switch."""
-        # Example implementation:
-        # import requests
-        # url = f"{self.address}/relay/outlet=?{switch_id}=ON"
-        # response = requests.get(url, auth=(self.username, self.password))
-        # response.raise_for_status()
-        pass
+        res = self.__session.get(f'http://{self.address}/outlet?{switch_id}=ON')
+        res.raise_for_status()
 
     def turn_off(self, switch_id: int):
         """Turns off a switch."""
-        # Example implementation:
-        # import requests
-        # url = f"{self.address}/relay/outlet=?{switch_id}=OFF"
-        # response = requests.get(url, auth=(self.username, self.password))
-        # response.raise_for_status()
-        pass
+        res = self.__session.get(f'http://{self.address}/outlet?{switch_id}=OFF')
+        res.raise_for_status()
 
     def outlets(self):
         """Get all outlets"""
