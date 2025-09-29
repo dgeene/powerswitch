@@ -46,7 +46,8 @@
             "justMyCode": false,
             "args": [
                 "-vs",
-                "tests/test_rest_client.py::TestHttpClient::test_client_turn_on"
+                "tests/test_rest_client.py::TestHttpClient::test_client_turn_on",
+                "--cfg=PS5"
             ]
         }
     ]
