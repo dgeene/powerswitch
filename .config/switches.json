@@ -3,18 +3,32 @@
     "name": "PS7",
     "host": "10.0.0.100",
     "username": "admin",
-    "password": "1234"
+    "password": "1234",
+    "outlets": {
+      "1": "eth switch",
+      "2": "fan",
+      "3": "weatherstation",
+      "4": "lights"
+    }
   },
   {
     "name": "PS5",
     "host": "10.0.0.101",
     "username": "admin",
-    "password": "1234"
+    "password": "1234",
+    "outlets": {
+      "1": "TV",
+      "2": "PS5",
+      "3": "Xbox",
+      "4": "Lights"
+    }
   },
   {
     "name": "harfbuff",
     "host": "192.168.0.100",
     "username": "admin",
-    "password": "1234"
+    "password": "1234",
+    "outlets": {
+    }
   }
 ]
