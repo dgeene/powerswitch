@@ -23,7 +23,7 @@ dev = [
 
 
 [project.scripts]
-powerswitch = "powerswitch.cli:main"
+psw = "powerswitch.cli:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
