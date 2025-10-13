@@ -25,87 +25,103 @@ def load_config():
     sys.exit(1)
 
 
-def print_switches(switches):
-    """Print available switches with numeric indices."""
-    print("\nAvailable switches:")
-    for idx, switch in enumerate(switches, 1):
-        print(f"{idx}. {switch['name']}")
+def find_switch_by_name(switches, switch_name):
+    """Find a switch configuration by name."""
+    for switch in switches:
+        if switch["name"] == switch_name:
+            return switch
+    return None
 
 
-def print_outlets(outlets):
-    """Print available outlets with numeric indices."""
-    print("\nAvailable outlets:")
+def resolve_outlet(switch, outlet_input):
+    """Resolve outlet by number or name, return outlet number as string."""
+    outlets = switch["outlets"]
+
+    # Try as direct outlet number
+    if outlet_input in outlets:
+        return outlet_input
+
+    # Try as outlet name (case-insensitive)
     for outlet_id, outlet_name in outlets.items():
-        print(f"{outlet_id}. {outlet_name}")
+        if outlet_name.lower() == outlet_input.lower():
+            return outlet_id
+
+    return None
 
 
-def get_switch_choice(switches):
-    """Get user's switch selection."""
-    while True:
-        try:
-            choice = input("\nSelect switch number (or 'q' to quit): ")
-            if choice.lower() == "q":
-                return None
-            idx = int(choice)
-            if 1 <= idx <= len(switches):
-                return switches[idx - 1]
-            print("Invalid selection. Please try again.")
-        except ValueError:
-            print("Please enter a number or 'q' to quit.")
+def create_client(switch):
+    """Create appropriate client based on switch configuration."""
+    if switch.get("restapi", False):
+        return RestClient(switch["host"], switch["username"], switch["password"])
+    else:
+        return HTTPClient(switch["host"], switch["username"], switch["password"])
 
 
-def get_outlet_action(outlets):
-    """Get user's outlet and action selection."""
-    while True:
-        try:
-            outlet = input("\nSelect outlet number (or 'q' to quit): ")
-            if outlet.lower() == "q":
-                return None, None
-
-            if outlet not in outlets:
-                print("Invalid outlet selection. Please try again.")
-                continue
-
-            action = input("Enter action (on/off) or 'q' to quit: ").lower()
-            if action == "q":
-                return None, None
-            if action not in ["on", "off"]:
-                print("Invalid action. Please enter 'on' or 'off'.")
-                continue
-
-            return outlet, action
-        except ValueError:
-            print("Please enter a valid outlet number or 'q' to quit.")
+def print_usage():
+    """Print usage information."""
+    print("Usage: cli.py <switch_name> <outlet_number_or_name> <on|off>")
+    print("\nExample:")
+    print("  cli.py PS7 1 on")
+    print("  cli.py PS7 fan off")
+    print("  cli.py PS5 TV on")
 
 
 def main():
-    """Main REPL loop for the power switch controller."""
+    """Main CLI function with positional arguments."""
+    if len(sys.argv) != 4:
+        print("Error: Invalid number of arguments.")
+        print_usage()
+        sys.exit(1)
+
+    switch_name = sys.argv[1]
+    outlet_input = sys.argv[2]
+    action = sys.argv[3].lower()
+
+    # Validate action
+    if action not in ["on", "off"]:
+        print(f"Error: Invalid action '{sys.argv[3]}'. Must be 'on' or 'off'.")
+        sys.exit(1)
+
+    # Load configuration
     switches = load_config()
 
-    while True:
-        print_switches(switches)
-        switch = get_switch_choice(switches)
-        if not switch:
-            break
+    # Find the switch
+    switch = find_switch_by_name(switches, switch_name)
+    if not switch:
+        print(f"Error: Switch '{switch_name}' not found in configuration.")
+        print("Available switches:")
+        for s in switches:
+            print(f"  - {s['name']}")
+        sys.exit(1)
 
-        # Create client based on switch type (defaulting to HTTPClient)
-        client = RestClient(switch["host"], switch["username"], switch["password"])
+    # Resolve the outlet
+    outlet_id = resolve_outlet(switch, outlet_input)
+    if not outlet_id:
+        print(f"Error: Outlet '{outlet_input}' not found for switch '{switch_name}'.")
+        print("Available outlets:")
+        for oid, name in switch["outlets"].items():
+            print(f"  - {oid}: {name}")
+        sys.exit(1)
 
-        while True:
-            print_outlets(switch["outlets"])
-            outlet, action = get_outlet_action(switch["outlets"])
-            if not outlet:
-                break
+    # Create the appropriate client
+    try:
+        client = create_client(switch)
 
-            try:
-                if action == "on":
-                    client.turn_on(int(outlet))
-                    print(f"Turned ON outlet {outlet} ({switch['outlets'][outlet]})")
-                else:
-                    client.turn_off(int(outlet))
-                    print(f"Turned OFF outlet {outlet} ({switch['outlets'][outlet]})")
-            except Exception as e:
-                print(f"Error: {str(e)}")
+        # Execute the action
+        if action == "on":
+            client.turn_on(int(outlet_id))
+            print(
+                f"Turned ON outlet {outlet_id} ({switch['outlets'][outlet_id]}) on switch {switch_name}"
+            )
+        else:
+            client.turn_off(int(outlet_id))
+            print(
+                f"Turned OFF outlet {outlet_id} ({switch['outlets'][outlet_id]}) on switch {switch_name}"
+            )
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

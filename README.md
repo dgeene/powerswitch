@@ -18,6 +18,10 @@ TBD
 
 ## Development
 
+Setup for development: `poetry install --with dev`
+
+Autoformatting: `poetry run ruff format <file>`
+
 Building documentation
 
 ### Testing
@@ -57,7 +61,9 @@ You can then specify which switch to test against when running pytest with `--cf
 
 #### Testing the cli without installing
 
-To test the cli without pipx install just run it as a module (from the project root): `python -m src.powerswitch.cli`
+To test the cli without pipx install just run it as a module (from the project root): `python -m src.powerswitch.cli PS7 1 on`
+
+Outlet names can also be used from the config file: ``python -m src.powerswitch.cli PS7 fan on`
 
 ## Resources
 
