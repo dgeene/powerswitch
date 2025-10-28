@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import argparse
 from pathlib import Path
 from .client import RestClient, HTTPClient
 
@@ -57,47 +58,46 @@ def create_client(switch):
         return HTTPClient(switch["host"], switch["username"], switch["password"])
 
 
-def print_usage():
-    """Print usage information."""
-    print("Usage: cli.py <switch_name> <outlet_number_or_name> <on|off>")
-    print("\nExample:")
-    print("  cli.py PS7 1 on")
-    print("  cli.py PS7 fan off")
-    print("  cli.py PS5 TV on")
-
-
 def main():
-    """Main CLI function with positional arguments."""
-    if len(sys.argv) != 4:
-        print("Error: Invalid number of arguments.")
-        print_usage()
-        sys.exit(1)
+    """Main CLI function using argparse."""
+    parser = argparse.ArgumentParser(
+        description="Control Digital Loggers Web Power Switch outlets",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  %(prog)s PS7 1 on     # Turn on outlet 1 on switch PS7
+  %(prog)s PS7 fan off  # Turn off the 'fan' outlet on switch PS7
+  %(prog)s PS5 TV on    # Turn on the 'TV' outlet on switch PS5
+        """,
+    )
 
-    switch_name = sys.argv[1]
-    outlet_input = sys.argv[2]
-    action = sys.argv[3].lower()
+    parser.add_argument("switch", help="Name of the switch to control")
+    parser.add_argument("outlet", help="Outlet number or name to control")
+    parser.add_argument(
+        "action",
+        choices=["on", "off"],
+        help="Action to perform (on/off)",
+        type=str.lower,
+    )
 
-    # Validate action
-    if action not in ["on", "off"]:
-        print(f"Error: Invalid action '{sys.argv[3]}'. Must be 'on' or 'off'.")
-        sys.exit(1)
+    args = parser.parse_args()
 
     # Load configuration
     switches = load_config()
 
     # Find the switch
-    switch = find_switch_by_name(switches, switch_name)
+    switch = find_switch_by_name(switches, args.switch)
     if not switch:
-        print(f"Error: Switch '{switch_name}' not found in configuration.")
+        print(f"Error: Switch '{args.switch}' not found in configuration.")
         print("Available switches:")
         for s in switches:
             print(f"  - {s['name']}")
         sys.exit(1)
 
     # Resolve the outlet
-    outlet_id = resolve_outlet(switch, outlet_input)
+    outlet_id = resolve_outlet(switch, args.outlet)
     if not outlet_id:
-        print(f"Error: Outlet '{outlet_input}' not found for switch '{switch_name}'.")
+        print(f"Error: Outlet '{args.outlet}' not found for switch '{args.switch}'.")
         print("Available outlets:")
         for oid, name in switch["outlets"].items():
             print(f"  - {oid}: {name}")
@@ -108,15 +108,15 @@ def main():
         client = create_client(switch)
 
         # Execute the action
-        if action == "on":
+        if args.action == "on":
             client.turn_on(int(outlet_id))
             print(
-                f"Turned ON outlet {outlet_id} ({switch['outlets'][outlet_id]}) on switch {switch_name}"
+                f"Turned ON outlet {outlet_id} ({switch['outlets'][outlet_id]}) on switch {args.switch}"
             )
         else:
             client.turn_off(int(outlet_id))
             print(
-                f"Turned OFF outlet {outlet_id} ({switch['outlets'][outlet_id]}) on switch {switch_name}"
+                f"Turned OFF outlet {outlet_id} ({switch['outlets'][outlet_id]}) on switch {args.switch}"
             )
 
     except Exception as e:
