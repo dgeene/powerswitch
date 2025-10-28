@@ -9,7 +9,51 @@ Yet another web power switch library for the Digital Loggers Web Power Switch
 
 ## Getting Started
 
-Using the powerswitch client.
+### Using the CLI
+
+Setting up a configuration. To work with multiple switches create a `$HOME/.config/powerswitch` directory with `switches.json`.
+
+Use this as a template:
+```json
+[
+  {
+    "name": "PS1",
+    "host": "10.0.0.100",
+    "username": "admin",
+    "password": "1234",
+    "restapi": true,
+    "cycletime": 5,
+    "outlets": {
+      "1": "eth switch",
+      "2": "fan",
+      "3": "weatherstation",
+      "4": "lights"
+    }
+  },
+  {
+    "name": "PS2",
+    "host": "10.0.0.101",
+    "username": "admin",
+    "password": "1234",
+    "restapi": true,
+    "cycletime": 5,
+    "outlets": {
+
+    }
+  },
+]
+```
+
+Notable settings. restapi=true if the switch model supports the rest api. the fallback is to use webpage processing. cycletime is the delay between cycling a switch from on -> and vice versa.
+
+### Using the powerswitch client classes.
+
+```python
+from powerswitch.client import RestClient, HTTPClient
+
+switch = RestClient(hostname, username, password)
+switch.turn_on(1)
+```
 
 
 ### Installing the CLI tool
@@ -25,38 +69,9 @@ Autoformatting: `poetry run ruff format <file>`
 Building documentation
 
 ### Testing
-Setting up a configuration. To work with multiple switches create a `.config` directory with `switches.json`.
 
 The idea with the named outlets is to quickly provide the cli with outlet names. This would have to be synchronized with what is actually configured in the switch.
 
-To test against multiple switches populate the json file like so:
-```json
-[
-  {
-    "name": "PS1",
-    "host": "10.0.0.100",
-    "username": "admin",
-    "password": "1234",
-    "outlets": {
-      "1": "eth switch",
-      "2": "fan",
-      "3": "weatherstation",
-      "4": "lights"
-    }
-  },
-  {
-    "name": "PS2",
-    "host": "10.0.0.101",
-    "username": "admin",
-    "password": "1234",
-    "outlets": {
-
-    }
-  },
-]
-```
-
-You can then specify which switch to test against when running pytest with `--cfg=PS2`
 
 
 #### Testing the cli without installing
