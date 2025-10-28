@@ -39,12 +39,20 @@ Use this as a template:
     "cycletime": 5,
     "outlets": {
 
+    },
+    "proxy": {
+      "host": "proxy.local",
+      "port": 22,
+      "username": "proxyuser",
+      "password": "proxypass"
     }
   },
 ]
 ```
 
 Notable settings. restapi=true if the switch model supports the rest api. the fallback is to use webpage processing. cycletime is the delay between cycling a switch from on -> and vice versa.
+
+We can also proxy http through an ssh tunnel if needed. This can work when a switch is directly connected to a machine over ethernet and not accessible via lan.
 
 ### Using the powerswitch client classes.
 

@@ -52,10 +52,11 @@ def resolve_outlet(switch, outlet_input):
 
 def create_client(switch):
     """Create appropriate client based on switch configuration."""
+    proxy_config = switch.get("proxy")
     if switch.get("restapi", False):
-        return RestClient(switch["host"], switch["username"], switch["password"])
+        return RestClient(switch["host"], switch["username"], switch["password"], proxy_config)
     else:
-        return HTTPClient(switch["host"], switch["username"], switch["password"])
+        return HTTPClient(switch["host"], switch["username"], switch["password"], proxy_config)
 
 
 def main():
