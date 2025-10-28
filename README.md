@@ -57,7 +57,11 @@ switch.turn_on(1)
 
 
 ### Installing the CLI tool
-TBD
+
+```bash
+pipx install git+https://github.com/dgeene/powerswitch.git
+psw PS7 fan on
+```
 
 
 ## Development
